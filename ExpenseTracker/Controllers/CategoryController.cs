@@ -19,9 +19,7 @@ public class CategoryController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var categories = await _context.Categories
-            .Include(c => c.Expenses) // щоб підрахунок суми працював
-            .ToListAsync();
+        var categories = await _context.Categories.Include(c => c.Expenses).ToListAsync();
 
         var categoryDtos = _mapper.Map<List<CategoryDto>>(categories);
         return Ok(categoryDtos);
@@ -31,15 +29,15 @@ public class CategoryController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
-        var category = await _context.Categories
-            .Include(c => c.Expenses)
+        var category = await _context
+            .Categories.Include(c => c.Expenses)
             .FirstOrDefaultAsync(c => c.ID == id);
 
         if (category == null)
             return NotFound();
 
-        var categoryDto = _mapper.Map<CategoryDto>(category);
-        return Ok(categoryDto);
+        var dto = _mapper.Map<CategoryDto>(category);
+        return Ok(dto);
     }
 
     // POST: api/Category
@@ -50,6 +48,12 @@ public class CategoryController : ControllerBase
             return BadRequest(ModelState);
 
         var category = _mapper.Map<Category>(categoryDto);
+
+        var exists = await _context.Categories.AnyAsync(c =>
+            c.Name.ToLower() == category.Name.ToLower()
+        );
+        if (exists)
+            return BadRequest("Категорія з таким іменем вже існує.");
 
         _context.Categories.Add(category);
         await _context.SaveChangesAsync();

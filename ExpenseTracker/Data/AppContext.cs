@@ -6,8 +6,7 @@ public class AppContext : DbContext
     public DbSet<Expense> Expenses { get; set; }
 
     public AppContext(DbContextOptions<AppContext> options)
-      : base(options)
-    { }
+        : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -27,10 +26,11 @@ public class AppContext : DbContext
         modelBuilder.Entity<Expense>(entity =>
         {
             entity.HasKey(exp => exp.ID);
-            entity.HasOne(exp => exp.Category)
-            .WithMany(c => c.Expenses)
-            .HasForeignKey(exp => exp.CategoryID)
-            .OnDelete(DeleteBehavior.Cascade);
+            entity
+                .HasOne(exp => exp.Category)
+                .WithMany(c => c.Expenses)
+                .HasForeignKey(exp => exp.CategoryID)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

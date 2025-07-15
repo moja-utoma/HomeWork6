@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 public class Expense
 {
@@ -7,6 +8,8 @@ public class Expense
     [Required]
     public decimal Sum { get; set; }
     public required string Comment { get; set; }
+
+    [Column(TypeName = "timestamp(6)")]
     public DateTime DateOfExpense { get; set; } = DateTime.Now;
 
     public int CategoryID { get; set; }
