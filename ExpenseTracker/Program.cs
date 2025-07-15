@@ -3,8 +3,9 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddControllers(); // додай контролери (обов'язково)
+builder.Services.AddEndpointsApiExplorer(); // для Swagger
+builder.Services.AddSwaggerGen();
 
 var conString = builder.Configuration.GetConnectionString("ExpenseDB") ??
      throw new InvalidOperationException("Connection string 'ExpenseDB'" +
@@ -13,19 +14,19 @@ var conString = builder.Configuration.GetConnectionString("ExpenseDB") ??
 builder.Services.AddDbContext<AppContext>(options =>
     options.UseNpgsql(conString));
 
+builder.Services.AddAutoMapper(typeof(MappingProfile));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
 
-app.MapGet("/", () =>
-{
-
-});
+app.MapControllers();
 
 app.Run();

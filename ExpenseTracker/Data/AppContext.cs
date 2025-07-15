@@ -29,7 +29,8 @@ public class AppContext : DbContext
             entity.HasKey(exp => exp.ID);
             entity.HasOne(exp => exp.Category)
             .WithMany(c => c.Expenses)
-            .HasForeignKey(exp => exp.CategoryID);
+            .HasForeignKey(exp => exp.CategoryID)
+            .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
